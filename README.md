@@ -15,6 +15,7 @@ To verify segmentation images:
 - Run `verify_segmentation.py`.
 
 Example result:
+
 ![](./doc/images/seg_verification.png)
 
 To verify annotation data:
