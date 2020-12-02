@@ -18,9 +18,5 @@ Example result:
 
 ![](./doc/images/seg_verification.png)
 
-To verify annotation data:
-- Put RGB data images (PNG format), `annotation.json` and `rgbImage.json` to the directory `./data/verify-annot/`;
-- Run `verify_annotation.py`.
-
 To train the model:
 - ...
