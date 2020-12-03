@@ -4,7 +4,7 @@ Verify that the segmentation images work correctly by applying them to capture i
 For each image, both the original and the masked image are shown for comparison.
 
 Usage:
-1) Put capture images to `./data/verify-seg/Captures/` and segmentation images to `./data/verify-seg/Segmentation/` ;
+1) Put capture images to `./data/verify-seg/Captures/` and segmentation images to `./data/verify-seg/Segmentation/`;
 2) Run this script.
 """
 import os
@@ -21,10 +21,10 @@ if __name__ == '__main__':
     cap_files = os.listdir(CAP_IMG_DIR)
     seg_files = os.listdir(SEG_IMG_DIR)
 
-    # Make sure the number of capture and segmentation images are equal
+    # Make sure the numbers of capture and segmentation images are equal
     assert len(cap_files) == len(seg_files)
     # For simplicity, here we sort these files in string order, which may differ from numerical order (e.g. '2' > '10')
-    # As long as the numbering scheme are consistent in both sets of images, the program will work correctly
+    # As long as the numbering schemes are consistent in both sets of images, the program will work correctly
     cap_files.sort()
     seg_files.sort()
 

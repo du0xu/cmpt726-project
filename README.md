@@ -18,5 +18,11 @@ Example result:
 
 ![](./doc/images/seg_verification.png)
 
+To generate images as the input of our model:
+- Put capture images to `./data/captures/`, segmentation images to `./data/segmentation/`,
+  image JSON files to `./data/image-json/`, annotation JSON files to `./data/annotation-json/`,
+  and background images to `./data/backgrounds/`.
+- Run `generate_inputs.py`. Generated images will be saved to `./data/generated/`.
+
 To train the model:
 - ...
