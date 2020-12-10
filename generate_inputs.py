@@ -54,7 +54,7 @@ def calculate_crop_area(kp):
     [x_min, y_min, _] = np.min(kp, axis=0).astype(int)
     [x_max, y_max, _] = np.max(kp, axis=0).astype(int)
     # We need some paddings when cropping the image
-    return (x_min - 50, y_min - 50), (x_max + 50, y_max + 50)
+    return (x_min - 50, y_min - 50), (x_max + 25, y_max + 25)
 
 
 def draw_keypoints(img, kp):
@@ -86,7 +86,7 @@ if __name__ == '__main__':
     annot_json_files.sort()
 
     # Iterate over each pair of JSON files
-    for i in range(len(img_json_files)):
+    for i in range(1):  # len(img_json_files)):
         # Load a pair of image and annotation JSON files
         with open(IMG_JSON_DIR + img_json_files[i], 'r') as img_json:
             img_info = json.load(img_json)
@@ -97,9 +97,10 @@ if __name__ == '__main__':
                 annot_info is not None and len(annot_info) > 0) and len(img_info) == len(annot_info)
 
         # Iterate over images specified in the image JSON file
-        for j in range(len(img_info)):
+        for j in range(1):  # len(img_info)):
             # File names of the capture image and the segmentation image
             cap_file_name = img_info[j]['file_name']
+            img_height = img_info[j]['height']
             seg_file_name = cap_file_name.replace(CAP_FILE_PREFIX, SEG_FILE_PREFIX)
 
             # Load capture image
@@ -107,6 +108,8 @@ if __name__ == '__main__':
 
             # Read keypoint coordinates of the current image from the annotation JSON
             keypoints = np.array(annot_info[j]['keypoints2d']).reshape(-1, 3)
+            # Flip the y coordinates of keypoint data from Unity, whose origin is at the bottom left
+            keypoints[:, 1] = img_height - keypoints[:, 1]
 
             # (For debugging only) Draw keypoints
             # draw_keypoints(cap_img, keypoints)
@@ -136,8 +139,9 @@ if __name__ == '__main__':
             # The position of this area is chosen randomly
             bg_height, bg_width, _ = bg_img.shape
             # Randomize the position of crop area within predefined margins
-            bg_crop_x_min, bg_crop_y_min = np.random.randint([100, 75], [bg_width - 100 - crop_width,
-                                                                         bg_height - 75 - crop_height])
+            bg_crop_x_min, bg_crop_y_min = np.random.randint([100, bg_height - 50 - crop_height],
+                                                             [bg_width - 50 - crop_width,
+                                                              bg_height - 10 - crop_height])
             bg_img_cropped = bg_img[bg_crop_y_min:bg_crop_y_min + crop_height - 1,
                              bg_crop_x_min:bg_crop_x_min + crop_width - 1]
 
@@ -150,9 +154,8 @@ if __name__ == '__main__':
             # (For debugging only) Display the generated image
             plt.imshow(cv2.cvtColor(res, cv2.COLOR_BGR2RGB))
             plt.axis('off')
+            # plt.savefig("result.png", bbox_inches='tight')
             plt.show()
 
             # Save the generated image
             # TODO Naming convention not decided yet
-
-            continue
