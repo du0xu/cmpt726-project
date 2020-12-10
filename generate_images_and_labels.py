@@ -87,7 +87,7 @@ if __name__ == '__main__':
     annot_json_files.sort()
 
     # Iterate over each pair of JSON files
-    for i in range(1):  # len(img_json_files)):
+    for i in range(len(img_json_files)):
         # Load a pair of image and annotation JSON files
         with open(IMG_JSON_DIR + img_json_files[i], 'r') as img_json:
             img_info = json.load(img_json)
@@ -100,7 +100,7 @@ if __name__ == '__main__':
         # Save the label data as a text file, each line listing the recalculated keypoint data for an image
         with open(GENERATED_DIR + f"{i}.dat", "w") as label_file:
             # Iterate over images specified in the image JSON file
-            for j in range(1):  # len(img_info)):
+            for j in range(len(img_info)):
                 # File names of the capture image and the segmentation image
                 cap_file_name = img_info[j]['file_name']
                 img_height = img_info[j]['height']
