@@ -9,6 +9,14 @@ This project is not finished yet. More details will be added later.
 This repository includes the training part. For the data collection part, check
 out [this repository](https://github.com/chenjshihchieh/Unity-data-collection).
 
+Before training our model, we need to generate images and labels based on the data we collected using Unity.
+
+The diagram below illustrates the process of generating the images:
+![](./doc/images/data-generation.png)
+
+Each label is composed of (x, y) coordinates of the 21 keypoints after cropping the capture image (a total of 42
+numbers), ultimately derived from annotation data captured in Unity.
+
 ## Milestones
 
 1. (Fall 2020) ...
@@ -23,7 +31,7 @@ To verify segmentation images:
 
 Example result:
 
-![](./doc/images/seg_verification.png)
+![](./doc/images/seg-verification.png)
 
 How to generate images and labels for the model:
 
