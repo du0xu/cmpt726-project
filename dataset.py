@@ -32,8 +32,9 @@ class ImageAndKeypointDataset(data.Dataset):
         all_files = os.listdir(self.data_path)
         self.dataset = []
         dat_files = filter(lambda x: x.endswith(".dat"), all_files)
-        for dat_num, dat_file in enumerate(dat_files):
+        for dat_file in dat_files:
             with open(os.path.join(data_path, dat_file), "r") as dat:
+                dat_num = dat_file.split()[0]
                 # Each line in the DAT file contains 42 floating point numbers,
                 # representing (x, y) coordinates of 21 keypoints
                 lines = dat.readlines()
