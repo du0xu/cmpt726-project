@@ -14,7 +14,7 @@ from model import KeypointPredictionModel
 DEFAULT_DATASET_PATH = './data/generated/'
 DEFAULT_MODEL_PATH = './model/model.pt'
 
-EPOCHS = 100
+EPOCHS = 10
 LEARNING_RATE = 1e-4
 MOMENTUM = 0
 MINIBATCH_SIZE = 16
