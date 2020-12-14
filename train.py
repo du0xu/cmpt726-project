@@ -15,8 +15,8 @@ DEFAULT_DATASET_PATH = './data/generated/'
 DEFAULT_MODEL_PATH = './model/model.pt'
 
 EPOCHS = 100
-LEARNING_RATE = 1e-3
-MOMENTUM = 0.9
+LEARNING_RATE = 1e-4
+MOMENTUM = 0
 MINIBATCH_SIZE = 16
 
 
@@ -30,7 +30,7 @@ def train(dataset_path=DEFAULT_DATASET_PATH, model_path=DEFAULT_MODEL_PATH):
     # Data loader that returns randomized minibatches
     data_loader = data.DataLoader(dataset, batch_size=MINIBATCH_SIZE, shuffle=True, num_workers=2)
     # Model optimization method
-    optimizer = optim.SGD(model.parameters(), lr=LEARNING_RATE, momentum=MOMENTUM)
+    optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
     # Loss function
     loss_fn = nn.MSELoss()
 
@@ -38,7 +38,7 @@ def train(dataset_path=DEFAULT_DATASET_PATH, model_path=DEFAULT_MODEL_PATH):
     model.train()
     # Loop multiple epochs
     for epoch in range(EPOCHS):
-        loss_history = []
+        print(f"\nEpoch #{epoch} running loss values: ")
         for inputs, labels in data_loader:
             # Send the current minibatch to the same device where the model is located
             inputs = inputs.to(device)
@@ -47,14 +47,13 @@ def train(dataset_path=DEFAULT_DATASET_PATH, model_path=DEFAULT_MODEL_PATH):
             outputs = model(inputs)
             # Compute the loss and save the result
             loss = loss_fn(outputs, labels)
-            loss_history.append(loss.item())
+            print(f"{round(loss.item(), 2)} ", end="")
             # Backward: compute gradients
             loss.backward()
             # Update model parameters
             optimizer.step()
             # Reset gradients to zero
             optimizer.zero_grad()
-        print(f"Epoch #{epoch}: loss = {loss_history}")
 
     # Save the trained model to a file
     trained_model = copy.deepcopy(model.state_dict())
