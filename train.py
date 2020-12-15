@@ -37,9 +37,11 @@ def train(dataset, loss_fn, dev, weight_decay=0):
         print(f"Training, epoch = {epoch}: ", end="")
         q = deque(maxlen=5)
 
-        for inputs, labels in dataloader:
-            print(">", end="")
+        for i, datapoint in enumerate(dataloader):
+            if i % 10 == 0:
+                print(">", end="")
 
+            inputs, labels = datapoint
             # Send the current mini-batch to the same device where the model is located
             inputs = inputs.to(dev)
             labels = labels.to(dev)
@@ -48,7 +50,8 @@ def train(dataset, loss_fn, dev, weight_decay=0):
             # Compute the loss and save the result
             loss = loss_fn(outputs, labels)
             # For debugging only
-            print(f"({loss.item():.2f})", end="")
+            if i % 10 == 0:
+                print(f"({loss.item():.2f})", end="")
             # Save the most recent loss values
             q.append(loss.item())
             # Backward: compute gradients
