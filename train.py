@@ -3,6 +3,8 @@ Trains the model.
 """
 from collections import deque
 
+import matplotlib.pyplot as plt
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -50,8 +52,8 @@ def train(dataset, loss_fn, dev, weight_decay=0):
             # Compute the loss and save the result
             loss = loss_fn(outputs, labels)
             # For debugging only
-            if i % 10 == 0:
-                print(f"({loss.item():.2f})", end="")
+            # if i % 10 == 0:
+            #     print(f"({loss.item():.2f})", end="")
             # Save the most recent loss values
             q.append(loss.item())
             # Backward: compute gradients
@@ -60,7 +62,6 @@ def train(dataset, loss_fn, dev, weight_decay=0):
             optimizer.step()
             # Reset gradients to zero
             optimizer.zero_grad()
-
         print(f" Finished. Loss for the last 5 mini-batches: {q}")
 
     # Return the trained model
@@ -76,17 +77,56 @@ def validate_or_test(model, dataset, loss_fn, dev):
     model.eval()
 
     with torch.no_grad():
-        for inputs, labels in dataloader:
+        for i, datapoint in enumerate(dataloader):
+            if i % 10 == 0:
+                print(">", end="")
+
+            inputs, labels = datapoint
             inputs = inputs.to(dev)
             labels = labels.to(dev)
 
             outputs = model(inputs)
-
             loss = loss_fn(outputs, labels)
 
             batch_size = labels.size(0)
             total_error = loss.item() * batch_size
-    return total_error / len(dataset)
+    avg_loss = total_error / len(dataset)
+    print(f" Finished. Loss = {avg_loss:2f}")
+    return avg_loss
+
+
+def visualize_result(model, dataset, loss_fn, dev):
+    print("Visualizing: ")
+    dataloader = data.DataLoader(dataset)
+
+    model.eval()
+
+    with torch.no_grad():
+        # Randomly pick a data point
+        input, label = next(iter(dataloader))
+
+        # Predict
+        input = input.to(dev)
+        label = label.to(dev)
+        output = model(input)
+        loss = loss_fn(output, label)
+
+        print(f"Loss = {loss.item():.2f}")
+
+        # Convert tensors to NumPy arrays
+        input = input.cpu().numpy()
+        label = label.cpu().numpy()
+        output = output.detach().cpu().numpy()
+        img = np.squeeze(input, axis=0).transpose((1, 2, 0))
+        kps_label = np.squeeze(label, axis=0).reshape(-1, 2)
+        kps = np.squeeze(output, axis=0).reshape(-1, 2)
+
+        # Draw
+        plt.imshow(img)
+        plt.scatter(kps_label[:, 0], kps_label[:, 1], s=3, c="y")
+        plt.scatter(kps[:, 0], kps[:, 1], s=5, c="r")
+        plt.show()
+        pass
 
 
 if __name__ == '__main__':
@@ -114,9 +154,11 @@ if __name__ == '__main__':
         # Train a new model using the training set
         trained_model = train(train_set, loss_function, device, weight_decay=wd)
         # Calculate the loss using the validation set
+        print("Validating: ", end="")
         val_loss = validate_or_test(trained_model, val_set, loss_function, device)
 
-        print(f"Validation loss = {val_loss:.2f}\n")
+        visualize_result(trained_model, test_set, loss_function, device)
+        chosen_model = trained_model
 
         # Save the model with the lowest validation loss
         if min_val_loss is None or val_loss < min_val_loss:
@@ -124,8 +166,8 @@ if __name__ == '__main__':
             chosen_model = trained_model
             chosen_wd = wd
     # Calculate the loss again, this time using the test set
+    print("Testing: ", end="")
     test_loss = validate_or_test(chosen_model, test_set, loss_function, device)
-    print(f"Test loss (L2 penalty = {chosen_wd}) = {test_loss:.2f}\n")
 
     # Save the model to disk
     torch.save(chosen_model.state_dict(), MODEL_PATH)
