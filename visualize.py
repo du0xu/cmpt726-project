@@ -10,7 +10,7 @@ import torch.utils.data as data
 from dataset import ImageAndKeypointDataset
 from model import KeypointPredictionModel
 
-DATA_PATH = './data-all/generated/'
+DATA_PATH = './data/generated/'
 MODEL_FILE = './model/model_final.pt'
 
 
