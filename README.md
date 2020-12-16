@@ -29,7 +29,7 @@ How to generate images and labels for the model:
 1. Put capture images to `./data/captures/`, segmentation images to `./data/segmentation/`, image JSON files
    to `./data/image-json/`, annotation JSON files to `./data/annotation-json/`, and background images
    to `./data/backgrounds/`.
-2. Run `./generate_images_and_labels.py`. Generated images and labels will be saved to `./data/generated/`.
+2. Run `./generate_data.py`. Generated images and labels will be saved to `./data/generated/`.
 
 To train the model:
 
