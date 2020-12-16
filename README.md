@@ -1,12 +1,8 @@
 # CMPT 726 course project
 
-## Work in progress
-
-This project is not finished yet. More details will be added later.
-
 ## Overview
 
-This repository includes the training part. For the data collection part, check
+This repository includes the data generation and the training part. For the data collection part, check
 out [this repository](https://github.com/chenjshihchieh/Unity-data-collection).
 
 Before training our model, we need to generate images and labels based on the data we collected using Unity.
@@ -17,17 +13,12 @@ The diagram below illustrates the process of generating the images:
 Each label is composed of (x, y) coordinates of the 21 keypoints after cropping the capture image (a total of 42
 numbers), ultimately derived from annotation data captured in Unity.
 
-## Milestones
-
-1. (Fall 2020) ...
-2. ...
-
 ## How to run
 
 To verify segmentation images:
 
-- Put capture images to `./data/verify-seg/Captures/` and segmentation images to `./data/verify-seg/Segmentation/`;
-- Run `verify_segmentation.py`.
+1. Put capture images to `./data/verify-seg/Captures/` and segmentation images to `./data/verify-seg/Segmentation/`;
+2. Run `verify_segmentation.py`.
 
 Example result:
 
@@ -42,4 +33,13 @@ How to generate images and labels for the model:
 
 To train the model:
 
-- ...
+1. Make sure you have generated input (images) and label (`.dat` files) data for the model: check the
+   folder `./data/generated/` for images and `.dat` files.
+2. Run `./train.py`. The state dictionary for trained models will be saved to `./model/`.
+
+To visualize a trained model:
+
+1. Make sure you have generated input (images) and label (`.dat` files) data for the model: check the
+   folder `./data/generated/` for images and `.dat` files.
+2. Set the value of `MODEL_FILE` to the model file you want to use.
+3. Run `./visualize.py`. The predicted keypoints will be marked onto the input image along with the ground truth.
