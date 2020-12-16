@@ -1,6 +1,7 @@
 """
 Trains the model.
 """
+import os
 from collections import deque
 
 import matplotlib.pyplot as plt
@@ -14,11 +15,11 @@ from dataset import ImageAndKeypointDataset
 from model import KeypointPredictionModel
 
 DATA_PATH = './data/generated/'
-MODEL_PATH = './model/model.pt'
+MODEL_PATH = './model/'
 
 TRAINING_SET_SIZE = 0.7
 VALIDATION_SET_SIZE = 0.2
-EPOCHS = 10
+EPOCHS = 5
 LEARNING_RATE = 1e-3
 L2_PENALTY_VALUES = [0, 1e-4, 1e-3, 1e-2, 1e-1]
 MINI_BATCH_SIZE = 16
@@ -40,7 +41,8 @@ def train(dataset, loss_fn, dev, weight_decay=0):
         q = deque(maxlen=5)
 
         for i, datapoint in enumerate(dataloader):
-            if i % 10 == 0:
+            # Progress indicator
+            if i % 20 == 0:
                 print(">", end="")
 
             inputs, labels = datapoint
@@ -52,7 +54,7 @@ def train(dataset, loss_fn, dev, weight_decay=0):
             # Compute the loss and save the result
             loss = loss_fn(outputs, labels)
             # For debugging only
-            # if i % 10 == 0:
+            # if i % 20 == 0:
             #     print(f"({loss.item():.2f})", end="")
             # Save the most recent loss values
             q.append(loss.item())
@@ -62,6 +64,9 @@ def train(dataset, loss_fn, dev, weight_decay=0):
             optimizer.step()
             # Reset gradients to zero
             optimizer.zero_grad()
+
+            # Free up memory
+            del inputs, labels, outputs, loss
         print(f" Finished. Loss for the last 5 mini-batches: {list(q)}")
 
     # Return the trained model
@@ -78,7 +83,7 @@ def validate_or_test(model, dataset, loss_fn, dev):
 
     with torch.no_grad():
         for i, datapoint in enumerate(dataloader):
-            if i % 10 == 0:
+            if i % 20 == 0:
                 print(">", end="")
 
             inputs, labels = datapoint
@@ -90,6 +95,8 @@ def validate_or_test(model, dataset, loss_fn, dev):
 
             batch_size = labels.size(0)
             total_error += loss.item() * batch_size
+
+            del inputs, labels, outputs, loss
     avg_loss = total_error / len(dataset)
     print(f" Finished. Loss = {avg_loss:2f}")
     return avg_loss
@@ -154,6 +161,9 @@ if __name__ == '__main__':
         # Train a new model using the training set
         trained_model = train(train_set, loss_function, device, weight_decay=wd)
 
+        # Save the model to disk
+        torch.save(trained_model.state_dict(), os.path.join(MODEL_PATH, f"model_{wd}.pt"))
+
         # Calculate the loss using the validation set
         print("Validating: ", end="")
         val_loss = validate_or_test(trained_model, val_set, loss_function, device)
@@ -171,4 +181,4 @@ if __name__ == '__main__':
     visualize_prediction(chosen_model, test_set, loss_function, device)
 
     # Save the chosen model to disk
-    torch.save(chosen_model.state_dict(), MODEL_PATH)
+    torch.save(chosen_model.state_dict(), os.path.join(MODEL_PATH, f"model_final.pt"))
