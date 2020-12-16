@@ -5,7 +5,7 @@ import torch
 import torch.nn as nn
 import torchvision.models as models
 
-HIDDEN_LAYER_SIZE = 2048
+HIDDEN_LAYER_SIZE = 1024
 
 
 class KeypointPredictionModel(nn.Module):
