@@ -62,7 +62,7 @@ def train(dataset, loss_fn, dev, weight_decay=0):
             optimizer.step()
             # Reset gradients to zero
             optimizer.zero_grad()
-        print(f" Finished. Loss for the last 5 mini-batches: {q}")
+        print(f" Finished. Loss for the last 5 mini-batches: {list(q)}")
 
     # Return the trained model
     return model
@@ -89,13 +89,13 @@ def validate_or_test(model, dataset, loss_fn, dev):
             loss = loss_fn(outputs, labels)
 
             batch_size = labels.size(0)
-            total_error = loss.item() * batch_size
+            total_error += loss.item() * batch_size
     avg_loss = total_error / len(dataset)
     print(f" Finished. Loss = {avg_loss:2f}")
     return avg_loss
 
 
-def visualize_result(model, dataset, loss_fn, dev):
+def visualize_prediction(model, dataset, loss_fn, dev):
     print("Visualizing: ")
     dataloader = data.DataLoader(dataset)
 
@@ -153,12 +153,10 @@ if __name__ == '__main__':
 
         # Train a new model using the training set
         trained_model = train(train_set, loss_function, device, weight_decay=wd)
+
         # Calculate the loss using the validation set
         print("Validating: ", end="")
         val_loss = validate_or_test(trained_model, val_set, loss_function, device)
-
-        visualize_result(trained_model, test_set, loss_function, device)
-        chosen_model = trained_model
 
         # Save the model with the lowest validation loss
         if min_val_loss is None or val_loss < min_val_loss:
@@ -169,5 +167,8 @@ if __name__ == '__main__':
     print("Testing: ", end="")
     test_loss = validate_or_test(chosen_model, test_set, loss_function, device)
 
-    # Save the model to disk
+    # Visualize the prediction
+    visualize_prediction(chosen_model, test_set, loss_function, device)
+
+    # Save the chosen model to disk
     torch.save(chosen_model.state_dict(), MODEL_PATH)
