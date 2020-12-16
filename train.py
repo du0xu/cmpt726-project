@@ -4,8 +4,6 @@ Trains the model.
 import os
 from collections import deque
 
-import matplotlib.pyplot as plt
-import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -102,40 +100,6 @@ def validate_or_test(model, dataset, loss_fn, dev):
     return avg_loss
 
 
-def visualize_prediction(model, dataset, loss_fn, dev):
-    print("Visualizing: ")
-    dataloader = data.DataLoader(dataset)
-
-    model.eval()
-
-    with torch.no_grad():
-        # Randomly pick a data point
-        input, label = next(iter(dataloader))
-
-        # Predict
-        input = input.to(dev)
-        label = label.to(dev)
-        output = model(input)
-        loss = loss_fn(output, label)
-
-        print(f"Loss = {loss.item():.2f}")
-
-        # Convert tensors to NumPy arrays
-        input = input.cpu().numpy()
-        label = label.cpu().numpy()
-        output = output.detach().cpu().numpy()
-        img = np.squeeze(input, axis=0).transpose((1, 2, 0))
-        kps_label = np.squeeze(label, axis=0).reshape(-1, 2)
-        kps = np.squeeze(output, axis=0).reshape(-1, 2)
-
-        # Draw
-        plt.imshow(img)
-        plt.scatter(kps_label[:, 0], kps_label[:, 1], s=3, c="y")
-        plt.scatter(kps[:, 0], kps[:, 1], s=5, c="r")
-        plt.show()
-        pass
-
-
 if __name__ == '__main__':
     # Use CUDA (GPU) if available
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -176,9 +140,6 @@ if __name__ == '__main__':
     # Calculate the loss again, this time using the test set
     print("Testing: ", end="")
     test_loss = validate_or_test(chosen_model, test_set, loss_function, device)
-
-    # Visualize the prediction
-    visualize_prediction(chosen_model, test_set, loss_function, device)
 
     # Save the chosen model to disk
     torch.save(chosen_model.state_dict(), os.path.join(MODEL_PATH, f"model_final.pt"))
